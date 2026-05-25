@@ -1,4 +1,4 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Save } from 'lucide-react';
 import staff from '@/routes/staff';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Product, Category } from '@/types/ecommerce';
 
 type StaffProductFormProps = {
@@ -13,11 +15,8 @@ type StaffProductFormProps = {
     categories: Category[];
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function StaffProductForm({ product, categories }: StaffProductFormProps) {
+    const { currency } = usePage().props as { currency?: string };
     const { data, setData, put, processing, errors } = useForm({
         price: product.price,
         stock_quantity: product.stock_quantity,
@@ -53,7 +52,7 @@ export default function StaffProductForm({ product, categories }: StaffProductFo
                             <div className="space-y-1 mb-6 text-sm">
                                 <p><span className="text-muted-foreground">SKU:</span> {product.sku}</p>
                                 <p><span className="text-muted-foreground">Category:</span> {product.category?.name || '—'}</p>
-                                <p><span className="text-muted-foreground">Current Price:</span> {formatCurrency(product.price)}</p>
+                                                                <p><span className="text-muted-foreground">Current Price:</span> <Price amount={product.price} currency={currency} /></p>
                                 <p><span className="text-muted-foreground">Current Stock:</span> {product.track_inventory ? product.stock_quantity : 'Not tracked'}</p>
                             </div>
                         </CardContent>

@@ -1,9 +1,11 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye, Radio } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Order } from '@/types/ecommerce';
 import { useEffect, useRef } from 'react';
 
@@ -39,11 +41,8 @@ const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'ou
     cancelled: 'destructive',
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function OrdersIndex({ orders, status }: OrdersIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     useEffect(() => {
@@ -116,7 +115,7 @@ export default function OrdersIndex({ orders, status }: OrdersIndexProps) {
                                                 <td className="py-3 font-medium">{order.order_number}</td>
                                                 <td className="py-3 text-muted-foreground">{order.assigned_staff?.name || `User #${order.user_id}`}</td>
                                                 <td className="py-3 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</td>
-                                                <td className="py-3">{formatCurrency(order.total)}</td>
+                                                <td className="py-3"><Price amount={order.total} currency={currency} /></td>
                                                 <td className="py-3">
                                                     <Badge variant={statusColors[order.status] || 'default'} className="capitalize">
                                                         {order.status}

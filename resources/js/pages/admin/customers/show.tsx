@@ -1,10 +1,12 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Mail, Phone, CalendarDays, ShoppingBag } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { User, Order } from '@/types/ecommerce';
 
 type CustomerShowProps = {
@@ -20,11 +22,8 @@ const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'ou
     cancelled: 'destructive',
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function CustomerShow({ user, orders }: CustomerShowProps) {
+    const { currency } = usePage().props as { currency?: string };
     return (
         <>
             <Head title={user.name} />
@@ -97,7 +96,7 @@ export default function CustomerShow({ user, orders }: CustomerShowProps) {
                                                     <tr key={order.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
                                                         <td className="py-3 font-medium">{order.order_number}</td>
                                                         <td className="py-3 text-muted-foreground text-xs">{new Date(order.created_at).toLocaleDateString()}</td>
-                                                        <td className="py-3">{formatCurrency(order.total)}</td>
+                                                        <td className="py-3"><Price amount={order.total} currency={currency} /></td>
                                                         <td className="py-3">
                                                             <Badge variant={statusColors[order.status] || 'default'} className="capitalize">
                                                                 {order.status}

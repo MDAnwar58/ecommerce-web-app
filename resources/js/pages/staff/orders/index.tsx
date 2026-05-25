@@ -1,9 +1,11 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
 import staff from '@/routes/staff';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Order } from '@/types/ecommerce';
 
 type StaffOrdersIndexProps = {
@@ -36,11 +38,8 @@ const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'ou
     cancelled: 'destructive',
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function StaffOrdersIndex({ orders, status }: StaffOrdersIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     function handleTabClick(tabValue: string) {
         router.get(staff.orders.index().url, tabValue ? { status: tabValue } : {}, { preserveState: true, replace: true });
     }
@@ -96,7 +95,7 @@ export default function StaffOrdersIndex({ orders, status }: StaffOrdersIndexPro
                                                 <td className="py-3 font-medium">{order.order_number}</td>
                                                 <td className="py-3 text-muted-foreground">{order.assigned_staff?.name || `User #${order.user_id}`}</td>
                                                 <td className="py-3 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</td>
-                                                <td className="py-3">{formatCurrency(order.total)}</td>
+                                                <td className="py-3"><Price amount={order.total} currency={currency} /></td>
                                                 <td className="py-3">
                                                     <Badge variant={statusColors[order.status] || 'default'} className="capitalize">
                                                         {order.status}

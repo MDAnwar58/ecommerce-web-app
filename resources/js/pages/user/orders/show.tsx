@@ -1,4 +1,6 @@
 import { Head, Link, usePage, router } from '@inertiajs/react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import orders from '@/routes/orders';
 import user from '@/routes/user';
 import shop from '@/routes/shop';
@@ -44,6 +46,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 
 export default function OrderShow() {
     const { order } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
     const StatusIcon = statusConfig[order.status]?.icon || Package;
     const currentStepIndex = statusFlow.findIndex((s) => s.status === order.status);
 
@@ -181,8 +184,8 @@ export default function OrderShow() {
                                                 <Link href={item.product ? shop.show({ product: item.product.slug }).url : '#'} className="font-medium text-gray-900 hover:text-green-600">
                                                     {item.product?.name ?? item.product_name}
                                                 </Link>
-                                                <p className="text-sm text-gray-500">Qty: {item.quantity} x ${(item.unit_price ?? item.price).toFixed(2)}</p>
-                                                <p className="mt-1 font-semibold text-gray-900">${item.total.toFixed(2)}</p>
+                                                <p className="text-sm text-gray-500">Qty: {item.quantity} x <Price amount={item.unit_price ?? item.price} currency={currency} /></p>
+                                                <Price amount={item.total} currency={currency} className="mt-1 font-semibold text-gray-900" />
                                             </div>
                                         </div>
                                     ))}
@@ -234,21 +237,21 @@ export default function OrderShow() {
                                     <div className="mt-4 space-y-2 border-t pt-4 text-sm">
                                         <div className="flex justify-between">
                                             <span className="text-gray-500">Subtotal</span>
-                                            <span>${order.subtotal.toFixed(2)}</span>
+                                            <Price amount={order.subtotal} currency={currency} />
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-500">Shipping</span>
-                                            <span>${order.shipping_cost.toFixed(2)}</span>
+                                            <Price amount={order.shipping_cost} currency={currency} />
                                         </div>
                                         {order.discount > 0 && (
                                             <div className="flex justify-between">
                                                 <span className="text-gray-500">Discount</span>
-                                                <span className="text-green-600">-${order.discount.toFixed(2)}</span>
+                                                <span className="text-green-600">-<Price amount={order.discount} currency={currency} /></span>
                                             </div>
                                         )}
                                         <div className="flex justify-between border-t pt-2 text-base font-bold">
                                             <span className="text-gray-900">Total</span>
-                                            <span className="text-green-600">${order.total.toFixed(2)}</span>
+                                            <Price amount={order.total} currency={currency} className="text-green-600" />
                                         </div>
                                     </div>
                                 </CardContent>

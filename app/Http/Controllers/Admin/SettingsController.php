@@ -10,7 +10,7 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $settings = Setting::all()->groupBy('group');
+        $settings = Setting::all()->pluck('value', 'key');
 
         return inertia('admin/settings/index', ['settings' => $settings]);
     }
@@ -18,14 +18,17 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
-            'settings' => 'required|array',
-            'settings.*.key' => 'required|string|max:255',
-            'settings.*.value' => 'nullable',
-            'settings.*.group' => 'nullable|string|max:255',
+            'store_name' => 'nullable|string|max:255',
+            'store_email' => 'nullable|email|max:255',
+            'store_phone' => 'nullable|string|max:255',
+            'store_address' => 'nullable|string',
+            'currency' => 'nullable|string|max:10',
+            'tax_rate' => 'nullable|numeric|min:0|max:100',
+            'shipping_cost' => 'nullable|numeric|min:0',
         ]);
 
-        foreach ($data['settings'] as $setting) {
-            Setting::setValue($setting['key'], $setting['value'] ?? '');
+        foreach ($data as $key => $value) {
+            Setting::setValue($key, $value ?? '');
         }
 
         return back()->with('success', 'Settings updated successfully.');

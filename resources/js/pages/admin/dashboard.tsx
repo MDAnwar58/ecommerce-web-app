@@ -1,8 +1,10 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DollarSign, ShoppingCart, Package, Users, TrendingUp, TrendingDown } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Order } from '@/types/ecommerce';
 
 type DashboardProps = {
@@ -57,11 +59,8 @@ function statusBadgeVariant(status: string) {
     return statusColors[status] || 'default';
 }
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function AdminDashboard({ stats, recentOrders, revenueData, topProducts }: DashboardProps) {
+    const { currency } = usePage().props as { currency?: string };
     const maxRevenue = revenueData.length > 0 ? Math.max(...revenueData.map(d => d.revenue)) : 1;
 
     return (
@@ -76,7 +75,7 @@ export default function AdminDashboard({ stats, recentOrders, revenueData, topPr
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard
                     title="Total Revenue"
-                    value={formatCurrency(stats.total_revenue)}
+                    value={<Price amount={stats.total_revenue} currency={currency} />}
                     icon={DollarSign}
                     href="#"
                     growth={stats.revenue_growth}
@@ -116,7 +115,7 @@ export default function AdminDashboard({ stats, recentOrders, revenueData, topPr
                                 {revenueData.map((item) => (
                                     <div key={item.month} className="flex-1 flex flex-col items-center gap-1 group">
                                         <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {formatCurrency(item.revenue)}
+                                            <Price amount={item.revenue} currency={currency} />
                                         </span>
                                         <div
                                             className="w-full rounded-md bg-primary/80 hover:bg-primary transition-colors cursor-pointer"
@@ -146,7 +145,7 @@ export default function AdminDashboard({ stats, recentOrders, revenueData, topPr
                                             <span className="text-sm font-medium truncate max-w-[140px]">{product.name}</span>
                                         </div>
                                         <div className="text-sm text-muted-foreground">
-                                            {product.sold} sold &bull; {formatCurrency(product.revenue)}
+                                            {product.sold} sold &bull; <Price amount={product.revenue} currency={currency} />
                                         </div>
                                     </div>
                                 ))}
@@ -189,7 +188,7 @@ export default function AdminDashboard({ stats, recentOrders, revenueData, topPr
                                                 {order.assigned_staff?.name || `User #${order.user_id}`}
                                             </td>
                                             <td className="py-3 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</td>
-                                            <td className="py-3">{formatCurrency(order.total)}</td>
+                                            <td className="py-3"><Price amount={order.total} currency={currency} /></td>
                                             <td className="py-3">
                                                 <Badge variant={statusBadgeVariant(order.status)} className="capitalize">
                                                     {order.status}

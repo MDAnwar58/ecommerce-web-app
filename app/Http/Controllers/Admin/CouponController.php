@@ -11,7 +11,7 @@ class CouponController extends Controller
 {
     public function index()
     {
-        $coupons = Coupon::latest()->paginate(15);
+        $coupons = Coupon::latest()->get();
 
         return inertia('admin/coupons/index', ['coupons' => $coupons]);
     }

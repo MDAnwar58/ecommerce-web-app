@@ -15,7 +15,7 @@ class WishlistController extends Controller
             ->latest()
             ->get();
 
-        return response()->json($items);
+        return inertia('user/wishlist', ['wishlist' => $items]);
     }
 
     public function store(Request $request)

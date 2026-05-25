@@ -86,6 +86,7 @@ export default function SettingsIndex({ settings }: SettingsIndexProps) {
                                     onChange={(e) => form.setData('currency', e.target.value)}
                                     className="border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                                 >
+                                    <option value="BDT">BDT (৳)</option>
                                     <option value="USD">USD ($)</option>
                                     <option value="EUR">EUR (€)</option>
                                     <option value="GBP">GBP (£)</option>

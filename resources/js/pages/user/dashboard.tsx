@@ -1,4 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import user from '@/routes/user';
 import wishlist from '@/routes/wishlist';
 import orders from '@/routes/orders';
@@ -45,6 +47,7 @@ const statusColors: Record<string, string> = {
 export default function UserDashboard() {
     const { auth } = usePage().props;
     const { orders: userOrders, wishlistCount, stats } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
 
     const statCards = [
         { label: 'Total Orders', value: stats?.total ?? userOrders.length, icon: ShoppingBag, color: 'text-blue-600 bg-blue-100' },
@@ -130,7 +133,7 @@ export default function UserDashboard() {
                                                         <Badge className={statusColors[order.status]}>
                                                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                                         </Badge>
-                                                        <span className="font-semibold text-gray-900">${order.total.toFixed(2)}</span>
+                                                        <Price amount={order.total} currency={currency} className="font-semibold text-gray-900" />
                                                         <ChevronRight className="h-4 w-4 text-gray-400" />
                                                     </div>
                                                 </CardContent>

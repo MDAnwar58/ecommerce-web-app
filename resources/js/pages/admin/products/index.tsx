@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Pencil, Trash2, Search, Package, RotateCcw } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Product, Category } from '@/types/ecommerce';
 import { useState, useEffect } from 'react';
 import DeleteModal from '@/components/delete-modal';
@@ -24,11 +26,8 @@ type ProductsIndexProps = {
     filters: { search?: string; category?: string };
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function ProductsIndex({ products, categories, filters }: ProductsIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [categoryValue, setCategoryValue] = useState(filters?.category || 'all');
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
@@ -182,7 +181,7 @@ export default function ProductsIndex({ products, categories, filters }: Product
                                                 </td>
                                                 <td className="py-3 text-muted-foreground font-mono text-xs">{product.sku}</td>
                                                 <td className="py-3 text-muted-foreground">{product.category?.name || '—'}</td>
-                                                <td className="py-3 font-medium">{formatCurrency(product.price)}</td>
+                                                <td className="py-3 font-medium"><Price amount={product.price} currency={currency} /></td>
                                                 <td className="py-3">
                                                     <span className={product.stock_quantity <= product.low_stock_threshold ? 'text-amber-600 font-medium' : ''}>
                                                         {product.track_inventory ? product.stock_quantity : '—'}

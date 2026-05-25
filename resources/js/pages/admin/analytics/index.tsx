@@ -1,7 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, ShoppingCart, Users, TrendingUp, BarChart3 } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 
 type AnalyticsProps = {
     revenueChart: { date: string; revenue: number }[];
@@ -17,11 +19,8 @@ type AnalyticsProps = {
     topProducts: { id: number; name: string; slug: string; price: number; sold_count: number; stock_quantity: number; primary_image?: { url?: string } | null }[];
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function AnalyticsIndex({ revenueChart, sales, topProducts }: AnalyticsProps) {
+    const { currency } = usePage().props as { currency?: string };
     const maxRevenue = revenueChart.length > 0 ? Math.max(...revenueChart.map(d => d.revenue)) : 1;
 
     return (
@@ -39,7 +38,7 @@ export default function AnalyticsIndex({ revenueChart, sales, topProducts }: Ana
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Total Revenue</p>
-                                    <p className="text-2xl font-bold">{formatCurrency(sales.total_revenue)}</p>
+                                    <Price amount={sales.total_revenue} currency={currency} className="text-2xl font-bold" />
                                 </div>
                                 <div className="rounded-lg bg-primary/10 p-3 text-primary">
                                     <DollarSign className="size-5" />
@@ -52,7 +51,7 @@ export default function AnalyticsIndex({ revenueChart, sales, topProducts }: Ana
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Today's Revenue</p>
-                                    <p className="text-2xl font-bold">{formatCurrency(sales.today_revenue)}</p>
+                                    <Price amount={sales.today_revenue} currency={currency} className="text-2xl font-bold" />
                                 </div>
                                 <div className="rounded-lg bg-emerald-500/10 p-3 text-emerald-600">
                                     <TrendingUp className="size-5" />
@@ -104,7 +103,7 @@ export default function AnalyticsIndex({ revenueChart, sales, topProducts }: Ana
                                     {revenueChart.map((item) => (
                                         <div key={item.date} className="flex-1 flex flex-col items-center gap-1 group">
                                             <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {formatCurrency(item.revenue)}
+                                                <Price amount={item.revenue} currency={currency} />
                                             </span>
                                             <div
                                                 className="w-full rounded-sm bg-primary/80 hover:bg-primary transition-colors cursor-pointer"
@@ -147,7 +146,7 @@ export default function AnalyticsIndex({ revenueChart, sales, topProducts }: Ana
                     <Card>
                         <CardContent className="p-6">
                             <p className="text-sm text-muted-foreground">Average Order Value</p>
-                            <p className="text-xl font-bold mt-1">{formatCurrency(sales.average_order ?? 0)}</p>
+                                    <Price amount={sales.average_order ?? 0} currency={currency} className="text-xl font-bold mt-1" />
                         </CardContent>
                     </Card>
                     <Card>

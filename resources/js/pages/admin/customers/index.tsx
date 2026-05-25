@@ -1,10 +1,12 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Eye, Users } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { User } from '@/types/ecommerce';
 
 type CustomersIndexProps = {
@@ -20,11 +22,8 @@ type CustomersIndexProps = {
     filters?: { search?: string };
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function CustomersIndex({ customers, filters }: CustomersIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     function handleSearch(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -94,7 +93,7 @@ export default function CustomersIndex({ customers, filters }: CustomersIndexPro
                                                 <td className="py-3 text-muted-foreground">{customer.phone || '—'}</td>
                                                 <td className="py-3">{'orders_count' in customer ? (customer as any).orders_count : '—'}</td>
                                                 <td className="py-3">
-                                                    {'total_spent' in customer ? formatCurrency((customer as any).total_spent) : '—'}
+                                                    {'total_spent' in customer ? <Price amount={(customer as any).total_spent} currency={currency} /> : '—'}
                                                 </td>
                                                 <td className="py-3 text-muted-foreground text-xs">{'created_at' in customer ? new Date((customer as any).created_at).toLocaleDateString() : '—'}</td>
                                                 <td className="py-3 text-right">

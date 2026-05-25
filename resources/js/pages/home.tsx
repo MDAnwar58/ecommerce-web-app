@@ -1,4 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import { login, register } from '@/routes';
 import user from '@/routes/user';
 import shop from '@/routes/shop';
@@ -35,6 +37,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function Home() {
     const { auth } = usePage().props;
+    const { currency } = usePage().props as { currency?: string };
 
     const [timeLeft, setTimeLeft] = useState({ hours: 23, minutes: 59, seconds: 59 });
     const [currentReview, setCurrentReview] = useState(0);
@@ -359,9 +362,9 @@ export default function Home() {
                                     <Package className="h-16 w-16 text-gray-300" />
                                 </div>
                                 <h3 className="mb-2 font-semibold text-gray-900">{product.name}</h3>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-2xl font-bold text-green-600">${product.price}</span>
-                                    <span className="text-sm text-gray-400 line-through">${product.original}</span>
+                                    <div className="flex items-center gap-2">
+                                    <Price amount={product.price} currency={currency} className="text-2xl font-bold text-green-600" />
+                                    <Price amount={product.original} currency={currency} className="text-sm text-gray-400 line-through" />
                                 </div>
                                 <div className="mt-4 h-2 overflow-hidden rounded-full bg-gray-100">
                                     <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shimmer-bg" />
@@ -412,7 +415,7 @@ export default function Home() {
                                     </div>
                                     <h3 className="mb-2 font-semibold text-gray-900">{product.name}</h3>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-lg font-bold text-green-600">${product.price}</span>
+                                        <Price amount={product.price} currency={currency} className="text-lg font-bold text-green-600" />
                                         <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50">
                                             <Eye className="h-4 w-4" />
                                         </Button>
@@ -452,8 +455,8 @@ export default function Home() {
                                     </Badge>
                                     <h3 className="mb-2 text-lg font-bold text-gray-900">{deal.name}</h3>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl font-bold text-green-600">${deal.price}</span>
-                                        <span className="text-sm text-gray-400 line-through">${deal.original}</span>
+                                        <Price amount={deal.price} currency={currency} className="text-2xl font-bold text-green-600" />
+                                        <Price amount={deal.original} currency={currency} className="text-sm text-gray-400 line-through" />
                                     </div>
                                     <Link href={shop.index()}>
                                         <Button className="mt-4 w-full gap-2 bg-green-600 hover:bg-green-700">

@@ -1,8 +1,10 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Clock, Package, CheckCircle } from 'lucide-react';
 import staff from '@/routes/staff';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Order } from '@/types/ecommerce';
 
 type StaffDashboardProps = {
@@ -23,11 +25,8 @@ const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'ou
     cancelled: 'destructive',
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function StaffDashboard({ stats, assignedOrders }: StaffDashboardProps) {
+    const { currency } = usePage().props as { currency?: string };
     return (
         <>
             <Head title="Staff Dashboard" />
@@ -124,7 +123,7 @@ export default function StaffDashboard({ stats, assignedOrders }: StaffDashboard
                                             <tr key={order.id} className="border-b last:border-0">
                                                 <td className="py-3 font-medium">{order.order_number}</td>
                                                 <td className="py-3 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</td>
-                                                <td className="py-3">{formatCurrency(order.total)}</td>
+                                                <td className="py-3"><Price amount={order.total} currency={currency} /></td>
                                                 <td className="py-3">
                                                     <Badge variant={statusColors[order.status] || 'default'} className="capitalize">
                                                         {order.status}

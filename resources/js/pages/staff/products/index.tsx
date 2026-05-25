@@ -1,4 +1,4 @@
-import { Head, Link, useForm, router } from '@inertiajs/react';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Package, Pencil, PackageOpen } from 'lucide-react';
 import staff from '@/routes/staff';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Product } from '@/types/ecommerce';
 
 type StaffProductsIndexProps = {
@@ -22,11 +24,8 @@ type StaffProductsIndexProps = {
     };
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function StaffProductsIndex({ products }: StaffProductsIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     const [stockProduct, setStockProduct] = useState<Product | null>(null);
     const stockForm = useForm({ stock_quantity: 0 });
 
@@ -97,7 +96,7 @@ export default function StaffProductsIndex({ products }: StaffProductsIndexProps
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-muted-foreground font-mono text-xs">{product.sku}</td>
-                                                <td className="p-4 font-medium">{formatCurrency(product.price)}</td>
+                                                <td className="p-4 font-medium"><Price amount={product.price} currency={currency} /></td>
                                                 <td className="p-4">
                                                     <span className={product.stock_quantity <= product.low_stock_threshold ? 'text-amber-600 font-medium' : ''}>
                                                         {product.track_inventory ? product.stock_quantity : '—'}

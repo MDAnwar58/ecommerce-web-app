@@ -1,4 +1,4 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, MapPin, CreditCard, StickyNote } from 'lucide-react';
 import staff from '@/routes/staff';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Order } from '@/types/ecommerce';
 
 type StaffOrderShowProps = {
@@ -20,11 +22,8 @@ const statusColors: Record<string, 'default' | 'secondary' | 'destructive' | 'ou
     cancelled: 'destructive',
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function StaffOrderShow({ order }: StaffOrderShowProps) {
+    const { currency } = usePage().props as { currency?: string };
     const statusForm = useForm({ status: order.status });
     const notesForm = useForm({ staff_notes: order.staff_notes || '' });
 
@@ -83,34 +82,34 @@ export default function StaffOrderShow({ order }: StaffOrderShowProps) {
                                                 <tr key={item.id} className="border-b last:border-0">
                                                     <td className="py-3 font-medium">{item.product_name}</td>
                                                     <td className="py-3 text-muted-foreground font-mono text-xs">{item.product_sku}</td>
-                                                    <td className="py-3">{formatCurrency(item.price)}</td>
+                                                    <td className="py-3"><Price amount={item.price} currency={currency} /></td>
                                                     <td className="py-3">{item.quantity}</td>
-                                                    <td className="py-3 text-right font-medium">{formatCurrency(item.total)}</td>
+                                                    <td className="py-3 text-right font-medium"><Price amount={item.total} currency={currency} /></td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colSpan={4} className="pt-3 text-sm text-muted-foreground text-right">Subtotal</td>
-                                                <td className="pt-3 text-sm text-right">{formatCurrency(order.subtotal)}</td>
+                                                <td className="pt-3 text-sm text-right"><Price amount={order.subtotal} currency={currency} /></td>
                                             </tr>
                                             <tr>
                                                 <td colSpan={4} className="text-sm text-muted-foreground text-right">Shipping</td>
-                                                <td className="text-sm text-right">{formatCurrency(order.shipping_cost)}</td>
+                                                <td className="text-sm text-right"><Price amount={order.shipping_cost} currency={currency} /></td>
                                             </tr>
                                             {order.discount > 0 && (
                                                 <tr>
                                                     <td colSpan={4} className="text-sm text-muted-foreground text-right">Discount</td>
-                                                    <td className="text-sm text-right text-emerald-600">-{formatCurrency(order.discount)}</td>
+                                                    <td className="text-sm text-right text-emerald-600">-<Price amount={order.discount} currency={currency} /></td>
                                                 </tr>
                                             )}
                                             <tr>
                                                 <td colSpan={4} className="text-sm text-muted-foreground text-right">Tax</td>
-                                                <td className="text-sm text-right">{formatCurrency(order.tax)}</td>
+                                                <td className="text-sm text-right"><Price amount={order.tax} currency={currency} /></td>
                                             </tr>
                                             <tr className="border-t">
                                                 <td colSpan={4} className="pt-3 font-semibold text-right">Total</td>
-                                                <td className="pt-3 font-semibold text-right">{formatCurrency(order.total)}</td>
+                                                <td className="pt-3 font-semibold text-right"><Price amount={order.total} currency={currency} /></td>
                                             </tr>
                                         </tfoot>
                                     </table>

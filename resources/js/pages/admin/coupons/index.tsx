@@ -1,4 +1,4 @@
-import { Head, useForm, router } from '@inertiajs/react';
+import { Head, useForm, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Pencil, Trash2, Percent, DollarSign } from 'lucide-react';
 import admin from '@/routes/admin';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import type { Coupon } from '@/types/ecommerce';
 import DeleteModal from '@/components/delete-modal';
 
@@ -16,11 +18,8 @@ type CouponsIndexProps = {
     coupons: Coupon[];
 };
 
-function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
-}
-
 export default function CouponsIndex({ coupons }: CouponsIndexProps) {
+    const { currency } = usePage().props as { currency?: string };
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
     const [deletingCoupon, setDeletingCoupon] = useState<Coupon | null>(null);
@@ -110,6 +109,9 @@ export default function CouponsIndex({ coupons }: CouponsIndexProps) {
                         <DialogContent className="sm:max-w-lg">
                             <DialogHeader>
                                 <DialogTitle>{editingCoupon ? 'Edit Coupon' : 'Create Coupon'}</DialogTitle>
+                                <DialogDescription className="sr-only">
+                                    {editingCoupon ? 'Edit the coupon details below.' : 'Fill in the details to create a new coupon.'}
+                                </DialogDescription>
                             </DialogHeader>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
@@ -221,10 +223,10 @@ export default function CouponsIndex({ coupons }: CouponsIndexProps) {
                                                     </Badge>
                                                 </td>
                                                 <td className="p-4 font-medium">
-                                                    {coupon.type === 'percentage' ? `${coupon.value}%` : formatCurrency(coupon.value)}
+                                                    {coupon.type === 'percentage' ? `${coupon.value}%` : <Price amount={coupon.value} currency={currency} />}
                                                 </td>
                                                 <td className="p-4 text-muted-foreground">
-                                                    {coupon.min_order_amount ? formatCurrency(coupon.min_order_amount) : '—'}
+                                                    {coupon.min_order_amount ? <Price amount={coupon.min_order_amount} currency={currency} /> : '—'}
                                                 </td>
                                                 <td className="p-4 text-muted-foreground">
                                                     {coupon.used_count}/{coupon.usage_limit || '∞'}

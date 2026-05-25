@@ -1,5 +1,7 @@
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import { useState, useCallback } from 'react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import shop from '@/routes/shop';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,6 +59,7 @@ interface Props {
 
 export default function ShopIndex() {
     const { products, categories, brands, filters: initialFilters } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
 
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState<Filters>(initialFilters || {});
@@ -324,9 +327,9 @@ export default function ShopIndex() {
                                                         <span className="text-xs text-gray-400">({product.reviews_count || 0})</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-lg font-bold text-green-600">${product.price}</span>
+                                                        <Price amount={product.price} currency={currency} className="text-lg font-bold text-green-600" />
                                                         {product.compare_price && (
-                                                            <span className="text-sm text-gray-400 line-through">${product.compare_price}</span>
+                                                            <Price amount={product.compare_price} currency={currency} className="text-sm text-gray-400 line-through" />
                                                         )}
                                                     </div>
                                                     <Button size="sm" className="mt-3 w-full gap-2 bg-green-600 hover:bg-green-700">

@@ -1,5 +1,7 @@
 import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import shop from '@/routes/shop';
 import cart from '@/routes/cart';
 import wishlist from '@/routes/wishlist';
@@ -32,6 +34,7 @@ interface Props {
 
 export default function ShopShow() {
     const { product, relatedProducts } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState<number | undefined>(undefined);
     const [quantity, setQuantity] = useState(1);
@@ -42,7 +45,7 @@ export default function ShopShow() {
     const { data, setData, post, processing } = useForm({
         product_id: product.id,
         quantity: 1,
-        variant_id: undefined as number | undefined,
+        product_variant_id: null as number | null,
     });
 
     const images = product.images?.length
@@ -203,9 +206,9 @@ export default function ShopShow() {
                         </div>
 
                         <div className="mb-6 flex items-baseline gap-3">
-                            <span className="text-3xl font-bold text-green-600">${product.price}</span>
+                            <Price amount={product.price} currency={currency} className="text-3xl font-bold text-green-600" />
                             {product.compare_price && (
-                                <span className="text-lg text-gray-400 line-through">${product.compare_price}</span>
+                                <Price amount={product.compare_price} currency={currency} className="text-lg text-gray-400 line-through" />
                             )}
                         </div>
 
@@ -223,7 +226,7 @@ export default function ShopShow() {
                                             key={v.id}
                                             onClick={() => {
                                                 setSelectedVariant(v.id);
-                                                setData('variant_id', v.id);
+                                                setData('product_variant_id', v.id);
                                             }}
                                             disabled={!v.in_stock}
                                             className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${
@@ -235,7 +238,7 @@ export default function ShopShow() {
                                             }`}
                                         >
                                             {v.name}
-                                            {v.price && <span className="ml-1">(+${v.price})</span>}
+                                            {v.price && <span className="ml-1">(+<Price amount={v.price} currency={currency} />)</span>}
                                         </button>
                                     ))}
                                 </div>
@@ -394,9 +397,9 @@ export default function ShopShow() {
                                                 <span className="text-xs text-gray-400">({rp.review_count || 0})</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-lg font-bold text-green-600">${rp.price}</span>
+                                                <Price amount={rp.price} currency={currency} className="text-lg font-bold text-green-600" />
                                                 {rp.compare_price && (
-                                                    <span className="text-sm text-gray-400 line-through">${rp.compare_price}</span>
+                                                    <Price amount={rp.compare_price} currency={currency} className="text-sm text-gray-400 line-through" />
                                                 )}
                                             </div>
                                         </CardContent>

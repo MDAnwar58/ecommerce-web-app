@@ -15,9 +15,25 @@ class CartController extends Controller
         $cartItems = Auth::user()->cartItems()
             ->with(['product.primaryImage', 'variant'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $unitPrice = $item->product->final_price;
+                if ($item->variant && $item->variant->price) {
+                    $unitPrice = $item->variant->price;
+                }
+                $item->unit_price = $unitPrice;
+                $item->subtotal = $unitPrice * $item->quantity;
+                return $item;
+            });
 
-        return response()->json($cartItems);
+        $subtotal = $cartItems->sum('subtotal');
+        $total = $subtotal;
+
+        return inertia('cart/index', [
+            'cartItems' => $cartItems,
+            'subtotal' => $subtotal,
+            'total' => $total,
+        ]);
     }
 
     public function store(Request $request)

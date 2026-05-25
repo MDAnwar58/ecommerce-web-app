@@ -1,5 +1,7 @@
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import orders from '@/routes/orders';
 import user from '@/routes/user';
 import shop from '@/routes/shop';
@@ -44,6 +46,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
 
 export default function OrdersIndex() {
     const { orders: userOrders } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
     const [search, setSearch] = useState('');
 
     const handleCancel = (order: Order) => {
@@ -113,7 +116,7 @@ export default function OrdersIndex() {
                                                             <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
                                                                 <span>{new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                                                 <span>{order.items?.length || 0} items</span>
-                                                                <span className="font-semibold text-gray-900">${order.total.toFixed(2)}</span>
+                                                                <Price amount={order.total} currency={currency} className="font-semibold text-gray-900" />
                                                             </div>
                                                         </div>
                                                     </div>

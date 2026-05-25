@@ -1,5 +1,7 @@
 import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { formatCurrency } from '@/lib/format';
+import { Price } from '@/components/price';
 import checkout from '@/routes/checkout';
 import shop from '@/routes/shop';
 import { Button } from '@/components/ui/button';
@@ -41,6 +43,7 @@ interface Props {
 
 export default function CheckoutIndex() {
     const { cartItems, addresses, subtotal, shipping, discount, total, couponCode } = usePage<Props>().props;
+    const { currency } = usePage().props as { currency?: string };
 
     const { data, setData, post, processing, errors } = useForm({
         address_id: addresses[0]?.id || '',
@@ -205,7 +208,7 @@ export default function CheckoutIndex() {
                                                     </div>
                                                 </div>
                                                 <span className="font-medium text-gray-900">
-                                                    {dm.price === 0 ? 'Free' : `$${dm.price.toFixed(2)}`}
+                                                    {dm.price === 0 ? 'Free' : <Price amount={dm.price} currency={currency} />}
                                                 </span>
                                             </label>
                                         );
@@ -301,7 +304,7 @@ export default function CheckoutIndex() {
                                                 <div className="flex-1">
                                                     <p className="text-sm font-medium text-gray-900 line-clamp-1">{item.product.name}</p>
                                                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                                                    <p className="text-sm font-semibold text-gray-900">${item.total.toFixed(2)}</p>
+                                                    <Price amount={item.total} currency={currency} className="text-sm font-semibold text-gray-900" />
                                                 </div>
                                             </div>
                                         ))
@@ -346,23 +349,23 @@ export default function CheckoutIndex() {
 
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Subtotal</span>
-                                        <span className="text-gray-900">${subtotal.toFixed(2)}</span>
+                                        <Price amount={subtotal} currency={currency} className="text-gray-900" />
                                     </div>
                                     <div className="flex justify-between text-sm">
                                         <span className="text-gray-500">Shipping</span>
                                         <span className="text-gray-900">
-                                            {shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`}
+                                            {shippingCost === 0 ? 'Free' : <Price amount={shippingCost} currency={currency} />}
                                         </span>
                                     </div>
                                     {discount > 0 && (
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">Discount</span>
-                                            <span className="text-green-600">-${discount.toFixed(2)}</span>
+                                            <span className="text-green-600">-<Price amount={discount} currency={currency} /></span>
                                         </div>
                                     )}
                                     <div className="flex justify-between border-t pt-3 text-lg font-bold">
                                         <span className="text-gray-900">Total</span>
-                                        <span className="text-green-600">${total.toFixed(2)}</span>
+                                        <Price amount={total} currency={currency} className="text-green-600" />
                                     </div>
                                 </div>
 

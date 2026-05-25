@@ -13,7 +13,7 @@ class AddressController extends Controller
     {
         $addresses = Auth::user()->addresses()->latest()->get();
 
-        return response()->json($addresses);
+        return inertia('user/addresses/index', ['addresses' => $addresses]);
     }
 
     public function store(Request $request)

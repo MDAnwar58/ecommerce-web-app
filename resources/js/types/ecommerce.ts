@@ -168,6 +168,15 @@ export type Review = {
     created_at: string;
 };
 
+export type WishlistItem = {
+    id: number;
+    user_id: number;
+    product_id: number;
+    product: Product;
+    created_at: string;
+    updated_at: string;
+};
+
 export type Coupon = {
     id: number;
     code: string;
